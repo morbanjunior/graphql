@@ -79,7 +79,7 @@ export class AuthService {
     const accessToken = this.jwtService.sign({
       userId,
       email,
-    },{expiresIn: '20s', secret: this.configService.get('JWT_SECRET')});
+    },{expiresIn: '1h', secret: this.configService.get('JWT_SECRET')});
 
     const refreshToken = this.jwtService.sign({
       userId,
@@ -102,5 +102,24 @@ export class AuthService {
   })
  }
 
+  async getNewTokens(userId: number, rt:string){
+    const user = await this.prisma.user.findUnique({
+      where:{id:userId},
+    });
+    if(!user){
+      throw new ForbiddenException('Access Denied');
+    }
+    const doRefreshTokensMatch = await argon.verify(user.hashedRereshToken,
+      rt);
+    if(!doRefreshTokensMatch){
+      throw new ForbiddenException('Access Denied');
+    }
+    const {accessToken, refreshToken} =await this.createTokens(
+      user.id,
+      user.email
+    );
+    await this.updateRefreshToken(user.id, refreshToken);
+    return { accessToken, refreshToken, user};
+  }
   
 }

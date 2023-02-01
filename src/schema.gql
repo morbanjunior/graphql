@@ -12,6 +12,7 @@ type LogOutResponse {
 
 type Mutation {
   createTodo(createTodoInput: CreateTodoInput!): Todo!
+  getNewTokens: newTokenRespose!
   logOut(id: Int!): LogOutResponse!
   removeTodo(id: Int!): Todo!
   signIn(SignInInput: SignInInput!): SignResponse!
@@ -20,6 +21,7 @@ type Mutation {
 }
 
 type Query {
+  hello: String!
   todo(id: Int!): Todo!
   todos: [Todo!]!
 }
@@ -55,4 +57,9 @@ type User {
   email: String!
   id: Int!
   username: String!
+}
+
+type newTokenRespose {
+  accessToken: String!
+  refreshToken: String!
 }
